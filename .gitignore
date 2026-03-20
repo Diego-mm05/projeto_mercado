@@ -1,5 +1,5 @@
 .env
-venv_mercado/
+venv/
 __pycache__/
 db.sqlite3
 venv/
