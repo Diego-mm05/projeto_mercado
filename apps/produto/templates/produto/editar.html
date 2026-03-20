@@ -1,0 +1,55 @@
+{% extends 'shared/base.html' %}
+{% block content %}
+
+<!-- Título da página -->
+<h2 style="text-align:center;">Editar Produto</h2>
+
+<!-- Formulário para editar o produto -->
+<form method="post" style="max-width:400px;margin:auto;">
+    {% csrf_token %}
+
+    <!-- Campo: nome -->
+    <p>
+        <label>Nome:</label>
+        <input type="text" name="nome" value="{{ produto.nome }}" required>
+    </p>
+
+    <!-- Campo: preço -->
+    <p>
+        <label>Preço:</label>
+        <input type="number" step="0.01" name="preco" value="{{ produto.preco }}" required>
+    </p>
+
+    <!-- Campo: estoque -->
+    <p>
+        <label>Estoque:</label>
+        <input type="number" name="estoque" value="{{ produto.estoque }}" required>
+    </p>
+
+    <!-- Campo: tipo -->
+    <p>
+        <label>Tipo:</label>
+        <select name="tipo" required>
+            <option value="mercado" {% if produto.tipo == 'mercado' %}selected{% endif %}>
+                Mercado (Unidade)
+            </option>
+
+            <option value="estoque" {% if produto.tipo == 'estoque' %}selected{% endif %}>
+                Estoque (Caixa)
+            </option>
+        </select>
+    </p>
+
+    <!-- Botão para salvar -->
+    <button type="submit">Salvar alterações</button>
+
+    <!-- Botão cancelar, muda dependendo do tipo -->
+    {% if produto.tipo == 'mercado' %}
+        <a href="{% url 'produto:index_loja' %}" style="margin-left:10px;">Cancelar</a>
+    {% else %}
+        <a href="{% url 'produto:index_estoque' %}" style="margin-left:10px;">Cancelar</a>
+    {% endif %}
+    
+</form>
+
+{% endblock %}

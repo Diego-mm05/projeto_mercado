@@ -1,0 +1,96 @@
+{% extends 'shared/base.html' %}
+{% block content %}
+
+<style>
+    .report-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input, select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="report-container">
+    <h2 style="text-align:center;">Gerar Relatório de Vendas</h2>
+    <a href="{% url 'produto:inicio' %}" style="display:block; margin-bottom:15px; text-align:center;">⬅ Voltar ao Início</a>
+
+    <form action="{% url 'produto:gerar_pdf' %}" method="get" target="_blank">
+        
+        <!-- Filtro por Data Específica -->
+        <div class="form-group">
+            <label>Data Início:</label>
+            <input type="date" name="data_inicio">
+        </div>
+
+        <div class="form-group">
+            <label>Data Final:</label>
+            <input type="date" name="data_final">
+        </div>
+
+        <hr style="margin: 20px 0;">
+        <p style="text-align:center; color:#666;">OU FILTRE POR MÊS/ANO</p>
+
+        <div class="form-group">
+            <label>Mês:</label>
+            <select name="mes">
+                <option value="">Todos</option>
+                <option value="1">Janeiro</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Março</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Ano:</label>
+            <select name="ano">
+                <option value="">Todos</option>
+                {% for year in anos %}
+                    <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">📄 Gerar PDF</button>
+    </form>
+</div>
+
+{% endblock %}

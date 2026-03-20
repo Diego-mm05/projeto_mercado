@@ -1,0 +1,152 @@
+{% extends 'shared/base.html' %}
+{% block content %}
+
+<style>
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 40px;
+        margin-top: 20px;
+    }
+    
+    .dashboard-header h1 {
+        color: #0078d7;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+    
+    .dashboard-header p {
+        color: #555;
+        font-size: 1.1rem;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        padding: 30px;
+        text-align: center;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+        border: 1px solid #e1e4e8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        border-color: #0078d7;
+    }
+
+    .card-icon {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .card-title {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .card-desc {
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* Cores específicas para hover */
+    .card-loja:hover .card-title { color: #0078d7; }
+    .card-estoque:hover .card-title { color: #555; }
+    .card-caixa:hover .card-title { color: #28a745; }
+    .card-relatorio:hover .card-title { color: #17a2b8; }
+    
+    /* Card de destaque para Cadastro */
+    .card-add {
+        background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+        color: white;
+        grid-column: span 2; /* Ocupa 2 colunas para preencher o espaço ao lado de Relatórios */
+        flex-direction: row; /* Ícone e texto lado a lado */
+        min-height: 120px;
+    }
+
+    .card-add:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+        border-color: transparent;
+    }
+
+    .card-add .card-title { color: white; margin-bottom: 5px; }
+    .card-add .card-desc { color: rgba(255,255,255,0.9); }
+    .card-add .card-icon { margin-bottom: 0; margin-right: 30px; font-size: 3rem; }
+
+    @media (max-width: 768px) {
+        .card-add {
+            grid-column: 1 / -1;
+            flex-direction: column;
+            text-align: center;
+        }
+        .card-add .card-icon { margin-right: 0; margin-bottom: 15px; }
+    }
+</style>
+
+<div class="dashboard-header">
+    <h1>Painel de Controle</h1>
+    <p> sistema Mercado Sinistro. Selecione uma opção abaixo:</p>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Loja -->
+    <a href="{% url 'produto:index_loja' %}" class="card card-loja">
+        <span class="card-icon">🛒</span>
+        <div class="card-title">Loja</div>
+        <div class="card-desc">Visualize os produtos disponíveis para venda e realize vendas.</div>
+    </a>
+
+    <!-- Estoque -->
+    <a href="{% url 'produto:index_estoque' %}" class="card card-estoque">
+        <span class="card-icon">📦</span>
+        <div class="card-title">Estoque</div>
+        <div class="card-desc">Gerencie o estoque, edite produtos e reponha mercadorias.</div>
+    </a>
+
+    <!-- Caixa -->
+    <a href="{% url 'produto:caixa' %}" class="card card-caixa">
+        <span class="card-icon">💵</span>
+        <div class="card-title">Caixa do Dia</div>
+        <div class="card-desc">Acompanhe as vendas realizadas hoje e o faturamento.</div>
+    </a>
+
+    <!-- Relatório -->
+    <a href="{% url 'produto:relatorio' %}" class="card card-relatorio">
+        <span class="card-icon">📊</span>
+        <div class="card-title">Relatórios</div>
+        <div class="card-desc">Gere PDFs detalhados de vendas por período.</div>
+    </a>
+
+    <!-- Cadastrar (Destaque) -->
+    <a href="{% url 'produto:cadastrar' %}" class="card card-add">
+        <span class="card-icon">➕</span>
+        <div>
+            <div class="card-title">Cadastrar Novo Produto</div>
+            <div class="card-desc">Adicione novos itens ao sistema rapidamente.</div>
+        </div>
+    </a>
+</div>
+
+{% endblock %}

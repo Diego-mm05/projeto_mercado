@@ -1,0 +1,240 @@
+{% extends 'shared/base.html' %}
+{% block content %}
+
+<!-- Estilos desta página -->
+<style>
+    form {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 400px;
+        margin: 50px auto;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    input, select {
+        width: 100%;
+        margin: 8px 0;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    button:hover {
+        background-color: #218838;
+    }
+</style>
+
+<!-- Título -->
+<h2 style="text-align:center;">Cadastrar Novo Produto</h2>
+{% if aviso_existente and produto_existente %}
+  <div style="width:100%;max-width:480px;margin:0 auto 12px auto;padding:10px;border:1px solid #e0a800;background:#fff3cd;color:#856404;border-radius:6px;text-align:center">
+    Produto já cadastrado com este código de barras.
+    <br>
+    <a href="{% url 'produto:editar' produto_existente.id %}" style="color:#004085;text-decoration:underline">Deseja editar?</a>
+  </div>
+{% endif %}
+
+<!-- Formulário -->
+<form method="post">
+    {% csrf_token %}
+
+    <!-- aqui começa codigo de barras/dev gustavo henrique -->
+    <label>Código de Barras:</label>
+<input type="text" name="codigo_barras" id="codigo_barras" placeholder="Escaneie ou digite o código" value="{% if produto_existente %}{{ produto_existente.codigo_barras }}{% endif %}">
+    <div style="margin:12px 0;">
+        <div id="videoContainer" style="position:relative;width:100%;max-width:480px;margin:auto">
+          <video id="barcodeVideo" style="width:100%;border-radius:8px;background:#000" autoplay muted playsinline></video>
+          <div id="roi" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:35%;border:2px solid #00ff88;border-radius:6px;box-shadow:0 0 10px rgba(0,255,136,.6)"></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+          <button type="button" id="btnStart" style="background:#0078d7">Iniciar scanner</button>
+          <button type="button" id="btnStop" style="background:#b00020">Parar scanner</button>
+          <button type="button" id="btnSwitch" style="background:#6c757d">Alternar câmera</button>
+          <label style="display:flex;align-items:center;gap:6px">
+            <input type="checkbox" id="chkContinuous" checked> Modo contínuo
+          </label>
+        </div>
+        <small id="scanStatus">Abrindo webcam e procurando código de barras...</small>
+    </div>
+    <!-- aqui terminar o codigo de barras/dev gustavo henrique -->
+
+    <!-- Campo nome -->
+    <label>Nome:</label>
+<input type="text" name="nome" id="nome" required value="{% if produto_existente %}{{ produto_existente.nome }}{% endif %}">
+
+    <!-- 💰 CAMPOS DE DINHEIRO -->
+<label>Preço de Custo:</label>
+<input
+  type="number"
+  name="preco_custo"
+  id="preco_custo"
+  step="0.01"
+  required
+  value="{% if produto_existente %}{{ produto_existente.preco_custo }}{% endif %}"
+>
+
+<label>Preço de Venda:</label>
+<input
+  type="number"
+  name="preco_venda"
+  id="preco_venda"
+  step="0.01"
+  required
+  value="{% if produto_existente %}{{ produto_existente.preco_venda }}{% endif %}"
+>
+
+
+    <!-- Campo estoque -->
+    <label>Estoque:</label>
+<input type="number" name="estoque" id="estoque" required value="{% if produto_existente %}{{ produto_existente.estoque }}{% endif %}">
+
+    <!-- Campo tipo -->
+    <label>Tipo:</label>
+<select name="tipo" id="tipo" required>
+        <option value="mercado" {% if produto_existente and produto_existente.tipo == 'mercado' %}selected{% endif %}>Mercado (Unidade)</option>
+        <option value="estoque" {% if produto_existente and produto_existente.tipo == 'estoque' %}selected{% endif %}>Estoque (Caixa)</option>
+    </select>
+
+    <!-- Botões -->
+<div style="display:flex;gap:10px;justify-content:center">
+  {% if produto_existente %}
+    <a href="{% url 'produto:editar' produto_existente.id %}"
+      style="background:#ffc107;color:#212529;padding:10px 16px;border-radius:5px;text-decoration:none;font-weight:bold">
+      Editar produto existente
+    </a>
+  {% else %}
+    <button type="submit">Cadastrar</button>
+  {% endif %}
+</div>
+
+
+<!-- Voltar -->
+<div style="text-align:center;">
+    <a href="{% url 'produto:inicio' %}">Voltar</a>
+</div>
+
+<!-- aqui começa codigo de barras/dev gustavo henrique -->
+<!-- Upload e captura de frames para leitura via backend -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const API_URL = "{% url 'produto:ler_barcode' %}";
+  const statusEl = document.getElementById('scanStatus');
+  const inputCodigo = document.getElementById('codigo_barras');
+  const inputNome = document.getElementById('nome');
+  const inputEstoque = document.getElementById('estoque');
+  const selectTipo = document.getElementById('tipo');
+  const inputPrecoCusto = document.getElementById('preco_custo');
+  const inputPrecoVenda = document.getElementById('preco_venda');
+  const videoEl = document.getElementById('barcodeVideo');
+  const btnStart = document.getElementById('btnStart');
+  const btnStop = document.getElementById('btnStop');
+  const chkContinuous = document.getElementById('chkContinuous');
+
+  let stream = null;
+  let intervalId = null;
+  let lastCode = null;
+  let lastTs = 0;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  // aqui inicia a câmera
+  async function startScanner() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      videoEl.srcObject = stream;
+      await videoEl.play();
+      statusEl.textContent = 'Capturando...';
+      startLoop();
+    } catch (e) {
+      statusEl.textContent = 'Erro ao abrir câmera';
+    }
+  }
+
+  function startLoop() {
+    stopLoop();
+    intervalId = setInterval(captureAndSend, 500);
+  }
+
+  function stopLoop() {
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  }
+
+  function stopScanner() {
+    stopLoop();
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
+      stream = null;
+    }
+    statusEl.textContent = 'Scanner parado.';
+  }
+
+  // aqui captura ROI e envia ao backend
+  function captureAndSend() {
+    if (!videoEl.videoWidth || !videoEl.videoHeight) return;
+    const vw = videoEl.videoWidth, vh = videoEl.videoHeight;
+    const sx = Math.floor(vw * 0.15);
+    const sy = Math.floor(vh * 0.325);
+    const sw = Math.floor(vw * 0.70);
+    const sh = Math.floor(vh * 0.35);
+    canvas.width = sw; canvas.height = sh;
+    ctx.drawImage(videoEl, sx, sy, sw, sh, 0, 0, sw, sh);
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const form = new FormData();
+      form.append('image', blob, 'frame.jpg');
+      try {
+        const resp = await fetch(API_URL, { method: 'POST', body: form });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (data.code) {
+          handleCodeFound(data.code);
+        }
+      } catch (_) {}
+    }, 'image/jpeg', 0.9);
+  }
+
+  // aqui trata o código encontrado
+  async function handleCodeFound(code) {
+    const now = Date.now();
+    if (chkContinuous.checked) {
+      if (lastCode === code && (now - lastTs) < 2000) return;
+      lastCode = code; lastTs = now;
+    } else {
+      stopScanner();
+    }
+    inputCodigo.value = code;
+    statusEl.textContent = 'Código: ' + code;
+    try {
+      const resp = await fetch('/produto/api/buscar_por_codigo/?codigo=' + encodeURIComponent(code));
+      if (resp.ok) {
+        const d = await resp.json();
+        inputNome.value = d.nome || '';
+        inputEstoque.value = d.estoque || '';
+        selectTipo.value = d.tipo || 'mercado';
+        if (d.preco_custo !== undefined) inputPrecoCusto.value = d.preco_custo;
+        if (d.preco_venda !== undefined) inputPrecoVenda.value = d.preco_venda;
+      }
+    } catch (_) {}
+  }
+
+  btnStart.addEventListener('click', startScanner);
+  btnStop.addEventListener('click', stopScanner);
+});
+</script>
+<!-- aqui terminar o codigo de barras/dev gustavo henrique -->
+
+{% endblock %}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Vendas</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+        }
+        .header {
+            text-align: center;
+            background-color: #0078d7; /* Azul do site */
+            color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        .header h1 {
+            margin: 0;
+            color: white;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #e6f2ff;
+            font-size: 12px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 10px; /* Espaço entre as células */
+            margin-bottom: 30px;
+        }
+        .summary-cell {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            width: 33%;
+        }
+        .summary-entrada { background-color: #e8f5e9; border: 1px solid #c3e6cb; }
+        .summary-saida { background-color: #fce8e6; border: 1px solid #f5c6cb; }
+        .summary-lucro { background-color: #e6f2ff; border: 1px solid #b8daff; }
+
+        .summary-label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .summary-value {
+            display: block;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .val-entrada { color: #28a745; }
+        .val-saida { color: #dc3545; }
+        .val-lucro { color: #0078d7; }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        .details-table th, .details-table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+        }
+        .details-table th {
+            background-color: #0078d7;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .details-table tr:nth-child(even) {
+            background-color: #f2f9ff; /* Azul bem claro alternado */
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Relatório de Vendas</h1>
+        <p>Gerado em: {{ agora|date:"d/m/Y H:i" }}</p>
+        <p>
+            Filtro: 
+            {% if data_inicio %} De {{ data_inicio|date:"d/m/Y" }} {% endif %}
+            {% if data_final %} Até {{ data_final|date:"d/m/Y" }} {% endif %}
+            {% if mes %} Mês: {{ mes }} {% endif %}
+            {% if ano %} Ano: {{ ano }} {% endif %}
+            {% if not data_inicio and not data_final and not mes and not ano %} Geral (Todo o período) {% endif %}
+        </p>
+    </div>
+
+    <!-- Resumo Financeiro -->
+    <h3 style="color: #0078d7; border-bottom: 2px solid #0078d7; padding-bottom: 5px; margin-bottom: 15px;">Resumo Financeiro</h3>
+    <table class="summary-table">
+        <tr>
+            <td class="summary-cell summary-entrada">
+                <span class="summary-label">Entrada (Vendas)</span>
+                <span class="summary-value val-entrada">R$ {{ receita|floatformat:2 }}</span>
+            </td>
+            <td class="summary-cell summary-saida">
+                <span class="summary-label">Saída (Custo)</span>
+                <span class="summary-value val-saida">R$ {{ custo|floatformat:2 }}</span>
+            </td>
+            <td class="summary-cell summary-lucro">
+                <span class="summary-label">Lucro Líquido</span>
+                <span class="summary-value val-lucro">R$ {{ lucro|floatformat:2 }}</span>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Detalhamento -->
+    <h3 style="color: #0078d7; border-bottom: 2px solid #0078d7; padding-bottom: 5px; margin-top: 20px; margin-bottom: 15px;">Detalhamento das Vendas</h3>
+    <table class="details-table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Produto</th>
+                <th>Qtd</th>
+                <th>Preço Venda</th>
+                <th>Custo Unit.</th>
+                <th>Lucro Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venda in vendas %}
+            <tr>
+                <td>{{ venda.data|date:"d/m/Y H:i" }}</td>
+                <td>{{ venda.produto.nome }}</td>
+                <td>{{ venda.quantidade }}</td>
+                <td>R$ {{ venda.preco_venda|floatformat:2 }}</td>
+                <td>R$ {{ venda.preco_custo|floatformat:2 }}</td>
+                <td>R$ {{ venda.lucro|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align:center;">Nenhuma venda encontrada para o período selecionado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Sistema Mercado Sinistro - Relatório Gerado Automaticamente
+    </div>
+</body>
+</html>

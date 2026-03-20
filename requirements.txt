@@ -1,0 +1,9 @@
+asgiref==3.10.0
+Django==5.2.7
+python-dotenv==1.2.1
+sqlparse==0.5.3
+tzdata==2025.2
+watchdog==6.0.0
+opencv-python
+zxing-cpp
+xhtml2pdf==0.2.17

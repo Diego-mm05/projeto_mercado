@@ -1,0 +1,202 @@
+/* ESTILO GERAL */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background-color: #f5f7fa; /* Fundo claro do site */
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* CABEÇALHO */
+.navbar {
+    background: linear-gradient(90deg, #0078d7, #005bb5); /* Cabeçalho azul */
+    color: white;
+    padding: 1rem 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.navbar .container { /* Área interna do cabeçalho */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin: auto;
+}
+
+.logo { /* Texto da logo */
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links a { /* Links do menu */
+    color: white;
+    text-decoration: none;
+    margin-left: 1.2rem;
+    transition: 0.3s;
+}
+
+.nav-links a:hover { /* Efeito nos links */
+    text-decoration: underline;
+    color: #d4ebff;
+}
+
+/* CONTEÚDO PRINCIPAL */
+.container { /* Área padrão de conteúdo */
+    width: 90%;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.main-content { /* Espaço onde ficam as páginas */
+    flex: 1;
+    padding: 2rem 0;
+}
+
+/* TABELAS */
+table { /* Tabela estilizada */
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+th { /* Cabeçalho da tabela */
+    background-color: #0078d7;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+td { /* Células da tabela */
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover { /* Efeito ao passar o mouse */
+    background-color: #f2f9ff;
+}
+
+/* FORMULÁRIOS */
+form { /* Formulário branco */
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+form p { /* Parágrafos do formulário */
+    margin-bottom: 1rem;
+}
+
+label { /* Títulos dos campos */
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+input { /* Campos de digitação */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button { /* Botão azul */
+    background-color: #0078d7;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+button:hover { /* Efeito ao passar o mouse no botão */
+    background-color: #005bb5;
+}
+
+/* RODAPÉ */
+.footer { /* Rodapé azul escuro */
+    background-color: #002b50;
+    color: white;
+    text-align: center;
+    padding: 1.2rem 0;
+    margin-top: auto;
+    font-size: 0.9rem;
+}
+
+.footer p + p { /* Espaço entre textos do rodapé */
+    margin-top: 5px;
+}
+
+/* RESPONSIVIDADE GERAL */
+@media (max-width: 768px) {
+    .navbar .container { /* Cabeçalho no celular */
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .nav-links {
+        margin-top: 10px;
+    }
+
+    table, th, td { /* Tabela menor */
+        font-size: 0.9rem;
+    }
+}
+
+/* MENU MOBILE */
+.menu-icon { /* Ícone do menu mobile */
+    display: none;
+    font-size: 32px;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Menu padrão (PC) */
+.nav-links { /* Menu horizontal */
+    display: flex;
+    gap: 20px;
+}
+
+/* RESPONSIVIDADE – MENU MOBILE */
+@media (max-width: 768px) {
+
+    .navbar-container { /* Área do topo no celular */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .menu-icon { /* Ícone visível no celular */
+        display: block;
+    }
+
+    .nav-links { /* Menu escondido no celular */
+        display: none;
+        flex-direction: column;
+        background: white;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 8px;
+    }
+
+    .nav-links.open { /* Menu quando aberto */
+        display: flex;
+    }
+
+    main.container { /* Conteúdo ajustado no celular */
+        width: 100%;
+        padding: 10px;
+    }
+}

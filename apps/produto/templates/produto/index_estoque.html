@@ -1,0 +1,98 @@
+{% extends 'shared/base.html' %}
+{% block content %}
+
+<!-- Estilos da página -->
+<style>
+    h2 { margin-top: 30px; }
+
+    /* Estilo completo da tabela: largura, sombra, cantos arredondados */
+    table {
+        width: 100%;              
+        border-collapse: collapse; 
+        margin-top: 15px;          
+        background: white;        
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+        border-radius: 8px;        
+        overflow: hidden;         
+    }
+
+    /* Estilo das células da tabela */
+    th, td {
+        border-bottom: 1px solid #ddd; 
+        padding: 12px;                 
+        text-align: left;              
+    }
+
+    /* Cabeçalho da tabela com cor cinza */
+    th {
+        background-color: #6c757d; 
+        color: white;              
+    }
+
+    /* Efeito quando passa o mouse na linha */
+    tr:hover { background-color: #f9f9f9; } 
+
+    /* Estilos dos botões (editar/excluir) */
+    .edit-btn, .delete-btn {
+        padding: 6px 12px;   
+        border-radius: 6px;  
+        color: white;        
+        text-decoration: none; 
+        margin-right: 5px;   
+    }
+
+    /* Botão de editar */
+    .edit-btn { background-color: #28a745; }      
+    .edit-btn:hover { background-color: #218838; } 
+
+    /* Botão de excluir */
+    .delete-btn { background-color: #dc3545; }     
+    .delete-btn:hover { background-color: #c82333; } 
+</style>
+
+<!-- Título da página -->
+<h2>Produtos em Estoque</h2>
+
+<!-- Botão de voltar -->
+<a href="{% url 'produto:inicio' %}" style="text-decoration:none;">⬅️ Voltar</a>
+
+<!-- Tabela com lista de produtos -->
+<table>
+    <tr>
+        <!-- Cabeçalho da tabela -->
+        <th>Nome</th>
+        <th>Preço</th>
+        <th>Estoque</th>
+        <th>Tipo</th>
+        <th>Ações</th>
+    </tr>
+
+    <!-- Loop dos produtos -->
+    {% for p in produtos %}
+    <tr>
+        <td>{{ p.nome }}</td>              
+        <td>R$ {{ p.preco }}</td>         
+        <td>{{ p.estoque }}</td>          
+        <td>{{ p.get_tipo_display }}</td> 
+
+        <!-- Botões Editar e Excluir -->
+        <td>
+            <a href="{% url 'produto:editar' p.id %}" class="edit-btn">Editar</a>
+            
+            <a href="{% url 'produto:excluir' p.id %}" 
+            class="delete-btn" 
+            onclick="return confirm('Tem certeza que deseja excluir este produto?');">
+            Excluir
+            </a>
+        </td>
+    </tr>
+
+    {% empty %}
+    <!-- Caso não tenha produtos -->
+    <tr>
+        <td colspan="5">Nenhum produto em estoque.</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
